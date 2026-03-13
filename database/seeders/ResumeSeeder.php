@@ -12,6 +12,9 @@ class ResumeSeeder extends Seeder
      */
     public function run(): void
     {
+        // On vide la table pour éviter les doublons à chaque déploiement
+        Resume::truncate();
+
         Resume::create([
             'full_name' => 'Pierre Bultez',
             'title' => 'Développeur Fullstack PHP | Laravel | Vue | Nuxt',
