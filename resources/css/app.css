@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+    /* Couleurs Monokai */
+    --color-terminal-bg: #272822;
+    --color-terminal-text: #f8f8f2;
+    --color-terminal-pink: #f92672;
+    --color-terminal-green: #a6e22e;
+    --color-terminal-orange: #fd971f;
+    --color-terminal-blue: #66d9ef;
+    --color-terminal-purple: #ae81ff;
+    --color-terminal-gray: #75715e;
+
+    /* Police JetBrains Mono */
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+    /* Animations personnalisées */
+    @keyframes glitch {
+        0% { transform: translate(0); text-shadow: -2px 0 var(--color-terminal-pink), 2px 0 var(--color-terminal-blue); }
+        25% { transform: translate(-2px, 2px); }
+        50% { transform: translate(2px, -2px); text-shadow: 2px 0 var(--color-terminal-pink), -2px 0 var(--color-terminal-blue); }
+        75% { transform: translate(-2px, -2px); }
+        100% { transform: translate(0); }
+    }
+    @keyframes scanline {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(100%); }
+    }
+    --animate-glitch: glitch 0.08s infinite;
+    --animate-scanline: scanline 8s linear infinite;
+    }
+
+@layer base {
+    body {
+        @apply bg-terminal-bg text-terminal-text font-mono antialiased min-h-screen flex items-center justify-center p-4 md:p-8;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+}
+
+@layer components {
+    .terminal-window {
+        @apply bg-terminal-bg border border-terminal-gray rounded-lg shadow-2xl overflow-hidden w-full max-w-5xl;
+    }
+
+    .terminal-header {
+        @apply bg-neutral-800 px-4 py-2 flex items-center gap-2 border-b border-terminal-gray;
+    }
+
+    .terminal-dot {
+        @apply w-3 h-3 rounded-full;
+    }
+
+    .terminal-body {
+        @apply p-6 overflow-y-auto leading-relaxed;
+    }
+
+    .prompt {
+        @apply text-terminal-green mr-2;
+    }
+
+    .keyword { @apply text-terminal-pink; }
+    .string { @apply text-terminal-orange; }
+    .function { @apply text-terminal-green; }
+    .comment { @apply text-terminal-gray italic; }
+    .variable { @apply text-terminal-blue; }
+    .type { @apply text-terminal-purple; }
+}
