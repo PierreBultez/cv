@@ -17,17 +17,24 @@ new class extends Component {
     {
         $url = route('resume.print');
 
+        $chromePath = glob(base_path('.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome'))[0] ?? null;
+
         // Génération du pdf
         $data = Browsershot::url($url)
-            ->setNodeBinary('/home/pierre/.nvm/versions/node/v24.12.0/bin/node')
-            ->setNpmBinary('/home/pierre/.nvm/versions/node/v24.12.0/bin/npm')
+            ->setIncludePath('$PATH:/home/pierre/.nvm/versions/node/v24.12.0/bin')
+            ->addChromiumArguments(['no-sandbox', 'disable-setuid-sandbox'])
             ->emulateMedia('screen')
             ->format('A4')
             ->margins(0, 0, 0, 0)
             ->showBackground()
             ->waitUntilNetworkIdle()
-            ->windowSize(1200, 1600)
-            ->pdf();
+            ->windowSize(1200, 1600);
+
+        if ($chromePath) {
+            $browsershot->setChromePath($chromePath);
+        }
+
+        $data = $browsershot->pdf();
 
         return response()->streamDownload(function () use ($data) {
             echo $data;
