@@ -59,6 +59,14 @@ jobs:
           set -e
           cd ${{ secrets.DEPLOY_PATH }}
           git pull origin master
+          
+          # Création des dossiers essentiels sur le serveur
+          mkdir -p storage/framework/cache/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/testing
+          mkdir -p storage/framework/views
+          mkdir -p bootstrap/cache
+          
           composer install --no-dev --optimize-autoloader
           php artisan migrate --force
           php artisan optimize
