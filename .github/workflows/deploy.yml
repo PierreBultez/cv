@@ -51,16 +51,19 @@ jobs:
 
           cd ${{ secrets.DEPLOY_PATH }}
 
-          # Mise à jour du code (silencieux)
+          # Mise à jour du code
           git pull origin master --quiet
+
+          # Nettoyage préventif du cache bootstrap
+          rm -f bootstrap/cache/config.php bootstrap/cache/routes.php bootstrap/cache/services.php bootstrap/cache/packages.php
 
           # Création des dossiers
           mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views bootstrap/cache
 
-          # Installation des dépendances PHP (plus discret)
-          composer install --no-dev --optimize-autoloader --no-interaction --quiet
+          # Installation des dépendances PHP (on retire --quiet pour débugger si besoin)
+          composer install --no-dev --optimize-autoloader --no-interaction
 
-          # Installation des dépendances JS et Build (plus discret)
+          # Installation des dépendances JS et Build
           npm install --no-audit --no-fund --quiet
           npm run build > /dev/null
 
