@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'browsershot' => [
+        'node_path' => env('NODE_BINARY'),
+        'npm_path' => env('NPM_BINARY'),
+    ],
+
 ];

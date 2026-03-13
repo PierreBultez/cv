@@ -17,15 +17,18 @@ new class extends Component {
     {
         $url = route('resume.print');
 
-        // On configure Browsershot avec les chemins du serveur si définis dans le .env
         $browsershot = Browsershot::url($url);
 
-        if (env('NODE_BINARY')) {
-            $browsershot->setNodeBinary(env('NODE_BINARY'));
+        // On utilise config() car env() ne marche pas si le cache est activé
+        if ($nodePath = config('services.browsershot.node_path')) {
+            $browsershot->setNodeBinary($nodePath);
+            // On ajoute aussi le dossier parent au PATH pour npm
+            $binDir = dirname($nodePath);
+            $browsershot->setIncludePath('$PATH:' . $binDir);
         }
 
-        if (env('NPM_BINARY')) {
-            $browsershot->setNpmBinary(env('NPM_BINARY'));
+        if ($npmPath = config('services.browsershot.npm_path')) {
+            $browsershot->setNpmBinary($npmPath);
         }
 
         // Génération du pdf
