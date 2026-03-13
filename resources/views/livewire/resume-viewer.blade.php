@@ -17,22 +17,10 @@ new class extends Component {
     {
         $url = route('resume.print');
 
-        $browsershot = Browsershot::url($url);
-
-        // On utilise config() car env() ne marche pas si le cache est activé
-        if ($nodePath = config('services.browsershot.node_path')) {
-            $browsershot->setNodeBinary($nodePath);
-            // On ajoute aussi le dossier parent au PATH pour npm
-            $binDir = dirname($nodePath);
-            $browsershot->setIncludePath('$PATH:' . $binDir);
-        }
-
-        if ($npmPath = config('services.browsershot.npm_path')) {
-            $browsershot->setNpmBinary($npmPath);
-        }
-
         // Génération du pdf
-        $data = $browsershot
+        $data = Browsershot::url($url)
+            ->setNodeBinary('/home/pierre/.nvm/versions/node/v24.12.0/bin/node')
+            ->setNpmBinary('/home/pierre/.nvm/versions/node/v24.12.0/bin/npm')
             ->emulateMedia('screen')
             ->format('A4')
             ->margins(0, 0, 0, 0)
