@@ -18,28 +18,26 @@ jobs:
         extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
         coverage: none
 
-    - name: Prepare Laravel Application
-      run: |
-        cp .env.example .env
-        mkdir -p bootstrap/cache
-        mkdir -p storage/framework/cache
-        mkdir -p storage/framework/sessions
-        mkdir -p storage/framework/testing
-        mkdir -p storage/framework/views
-        chmod -R 775 storage bootstrap/cache
-        touch storage/logs/laravel.log
-        chmod 775 storage/logs/laravel.log
-
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '24'
         cache: 'npm'
 
-    - name: Install Composer Dependencies
-      run: composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
+    - name: Prepare Environment
+      run: |
+        cp .env.example .env
+        mkdir -p storage/framework/cache/data
+        mkdir -p storage/framework/sessions
+        mkdir -p storage/framework/testing
+        mkdir -p storage/framework/views
+        mkdir -p storage/logs
+        mkdir -p bootstrap/cache
 
-    - name: Generate key
+    - name: Install Composer Dependencies
+      run: composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --optimize-autoloader
+
+    - name: Generate Key
       run: php artisan key:generate
 
     - name: Install NPM Dependencies & Build
@@ -57,12 +55,12 @@ jobs:
         script: |
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          source ~/.bash_profile 2>/dev/null || source ~/.bashrc 2>/dev/null || true
+          source ~/.bashrc 2>/dev/null || true
           set -e
           cd ${{ secrets.DEPLOY_PATH }}
           git pull origin master
           composer install --no-dev --optimize-autoloader
-          php artisan migrate --force --seed
+          php artisan migrate --force
           php artisan optimize
           php artisan view:cache
           php artisan livewire:configure-sfc --no-interaction
