@@ -65,11 +65,11 @@ jobs:
 
           # Installation des dépendances JS et Build
           npm install --no-audit --no-fund --quiet
-          
+
           # Correction chirurgicale des permissions de build
           chmod +x node_modules/vite/bin/vite.js
           find node_modules -name "esbuild" -exec chmod +x {} \;
-          
+
           npm run build > /dev/null
 
           # Mise à jour BDD et Optimisation Laravel
@@ -82,4 +82,5 @@ jobs:
           sudo find . -type f -exec chmod 644 {} \;
           sudo find . -type d -exec chmod 755 {} \;
           sudo chmod -R 775 storage bootstrap/cache
+          chmod 775 database/database.sqlite
           sudo chown -R www-data:www-data storage bootstrap/cache

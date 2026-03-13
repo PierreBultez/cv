@@ -17,8 +17,19 @@ new class extends Component {
     {
         $url = route('resume.print');
 
+        // On configure Browsershot avec les chemins du serveur si définis dans le .env
+        $browsershot = Browsershot::url($url);
+
+        if (env('NODE_BINARY')) {
+            $browsershot->setNodeBinary(env('NODE_BINARY'));
+        }
+
+        if (env('NPM_BINARY')) {
+            $browsershot->setNpmBinary(env('NPM_BINARY'));
+        }
+
         // Génération du pdf
-        $data = Browsershot::url($url)
+        $data = $browsershot
             ->emulateMedia('screen')
             ->format('A4')
             ->margins(0, 0, 0, 0)
