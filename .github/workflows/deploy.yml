@@ -1,4 +1,4 @@
-name: Deploy CV to Production
+name: Deploy to Prod
 
 on:
   push:
@@ -65,9 +65,21 @@ jobs:
 
           # Installation des dépendances JS et Build
           npm install --no-audit --no-fund --quiet
+          
+          # Correction chirurgicale des permissions de build
+          chmod +x node_modules/vite/bin/vite.js
+          find node_modules -name "esbuild" -exec chmod +x {} \;
+          
           npm run build > /dev/null
 
           # Mise à jour BDD et Optimisation Laravel
-          php artisan migrate --force --seed --no-interaction
-          php artisan optimize --quiet
+          php artisan key:generate --force --quiet
+          php artisan migrate --force --seed --no-interaction --quiet
+          php artisan optimize:clear --quiet
           php artisan view:cache --quiet
+
+          # Ajuster les permissions
+          sudo find . -type f -exec chmod 644 {} \;
+          sudo find . -type d -exec chmod 755 {} \;
+          sudo chmod -R 775 storage bootstrap/cache
+          sudo chown -R www-data:www-data storage bootstrap/cache
