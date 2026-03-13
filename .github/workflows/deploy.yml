@@ -1,0 +1,49 @@
+name: Deploy CV to Production
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+        coverage: none
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+        cache: 'npm'
+
+    - name: Install Composer Dependencies
+      run: composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
+
+    - name: Install NPM Dependencies & Build
+      run: |
+        npm install
+        npm run build
+
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd ${{ secrets.DEPLOY_PATH }}
+          git pull origin master
+          composer install --no-dev --optimize-autoloader
+          php artisan migrate --force --seed
+          php artisan optimize
+          php artisan view:cache
+          php artisan livewire:configure-sfc --no-interaction
