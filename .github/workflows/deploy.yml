@@ -51,24 +51,20 @@ jobs:
 
           cd ${{ secrets.DEPLOY_PATH }}
 
-          # Mise à jour du code
-          git pull origin master
+          # Mise à jour du code (silencieux)
+          git pull origin master --quiet
 
-          # Création des dossiers de cache si manquants
-          mkdir -p storage/framework/cache/data
-          mkdir -p storage/framework/sessions
-          mkdir -p storage/framework/testing
-          mkdir -p storage/framework/views
-          mkdir -p bootstrap/cache
+          # Création des dossiers
+          mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views bootstrap/cache
 
-          # Installation des dépendances PHP
-          composer install --no-dev --optimize-autoloader --no-interaction
+          # Installation des dépendances PHP (plus discret)
+          composer install --no-dev --optimize-autoloader --no-interaction --quiet
 
-          # Installation des dépendances JS et Build Tailwind 4 sur le serveur
-          npm install
-          npm run build
+          # Installation des dépendances JS et Build (plus discret)
+          npm install --no-audit --no-fund --quiet
+          npm run build > /dev/null
 
           # Mise à jour BDD et Optimisation Laravel
-          php artisan migrate --force --seed
-          php artisan optimize:clear
-          php artisan view:cache
+          php artisan migrate --force --seed --no-interaction
+          php artisan optimize --quiet
+          php artisan view:cache --quiet
