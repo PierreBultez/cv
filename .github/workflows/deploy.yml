@@ -44,12 +44,17 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
+          export PATH="/home/pierre/.nvm/versions/node/v25.8.1/bin:$PATH"
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           source ~/.bashrc 2>/dev/null || true
           set -e
 
           cd ${{ secrets.DEPLOY_PATH }}
+
+          # Vérification de node/npm
+          node -v
+          npm -v
 
           # Mise à jour du code
           git pull origin master
