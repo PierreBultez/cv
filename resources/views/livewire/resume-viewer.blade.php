@@ -15,21 +15,39 @@ new class extends Component {
 
     public function downloadPdf(): StreamedResponse
     {
-        // On récupère le contenu HTML directement au lieu de passer par une URL
-        // Cela évite le deadlock du serveur php artisan serve
         $html = view('resume-print', ['resume' => $this->resume])->render();
 
-        // Génération du pdf
+        // Création du dossier de travail s'il n'existe pas
+        $browsershotPath = storage_path('browsershot');
+        if (!file_exists($browsershotPath)) {
+            mkdir($browsershotPath, 0775, true);
+        }
+
         $data = Browsershot::html($html)
             ->setNodeBinary('/home/pierre/.nvm/versions/node/v25.8.1/bin/node')
             ->setNpmBinary('/home/pierre/.nvm/versions/node/v25.8.1/bin/npm')
-            ->addChromiumArguments(['no-sandbox', 'disable-setuid-sandbox'])
+            ->setChromePath('/usr/bin/google-chrome')
+            // Force HOME et XDG pour éviter que Chrome ne cherche /var/www/.local
+            ->setOption('env', [
+                'HOME' => $browsershotPath,
+                'XDG_CONFIG_HOME' => $browsershotPath,
+                'XDG_DATA_HOME' => $browsershotPath,
+            ])
+            ->addChromiumArguments([
+                'no-sandbox',
+                'disable-setuid-sandbox',
+                'disable-dev-shm-usage', // Important pour les serveurs (évite crash mémoire)
+                'disable-extensions',
+                'disable-gpu',
+                'user-data-dir=' . $browsershotPath,
+                // Correction spécifique pour l'erreur "crashpad_handler --database"
+                'crash-dumps-dir=' . $browsershotPath,
+            ])
             ->emulateMedia('screen')
             ->format('A4')
             ->margins(0, 0, 0, 0)
             ->showBackground()
             ->waitUntilNetworkIdle()
-            ->windowSize(1200, 1600)
             ->pdf();
 
         return response()->streamDownload(function () use ($data) {
