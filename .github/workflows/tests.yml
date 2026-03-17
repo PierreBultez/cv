@@ -33,8 +33,7 @@ jobs:
       - name: Copy Testing Environment File
         run: cp .env.testing .env
 
-      - name: Generate Application Key
-        run: php artisan key:generate
-
       - name: Run Tests
         run: ./vendor/bin/pest
+        env:
+          APP_KEY: base64:75U0B8x/6g6lP9X0qC4iX9+eN/8P9pL/Y5T8b1T8b1T8=
