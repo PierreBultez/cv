@@ -15,10 +15,12 @@ new class extends Component {
 
     public function downloadPdf(): StreamedResponse
     {
-        $url = route('resume.print');
+        // On récupère le contenu HTML directement au lieu de passer par une URL
+        // Cela évite le deadlock du serveur php artisan serve
+        $html = view('resume-print', ['resume' => $this->resume])->render();
 
         // Génération du pdf
-        $data = Browsershot::url($url)
+        $data = Browsershot::html($html)
             ->setNodeBinary('/home/pierre/.nvm/versions/node/v25.8.1/bin/node')
             ->setNpmBinary('/home/pierre/.nvm/versions/node/v25.8.1/bin/npm')
             ->addChromiumArguments(['no-sandbox', 'disable-setuid-sandbox'])
