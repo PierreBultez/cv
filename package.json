@@ -21,6 +21,6 @@
         "lightningcss-linux-x64-gnu": "^1.29.1"
     },
     "devDependencies": {
-        "puppeteer": "^24.39.0"
+        "puppeteer": "^24.39.1"
     }
 }
