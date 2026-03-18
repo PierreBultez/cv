@@ -96,6 +96,7 @@ class ResumeSeeder extends Seeder
                 'Backend' => ['PHP 8+', 'Laravel 12', 'SQLite', 'MySQL', 'Redis', 'Inertia', 'GraphQL'],
                 'Frontend' => ['Livewire 4', 'Tailwind CSS 4', 'Alpine.js', 'Vue JS', 'Nuxt', 'Flux UI', 'Nuxt UI'],
                 'Tools' => ['Git', 'Vite', 'PHPUnit/Pest', 'Github Actions', 'PhpStorm', 'WebStorm', 'Composer', 'npm', 'Bash'],
+                'CMS' => ['Magento', 'Wordpress'],
                 'Os' => ['Debian based distro', 'Arch Linux'],
                 'AI' => ['Gemini cli'],
             ],
